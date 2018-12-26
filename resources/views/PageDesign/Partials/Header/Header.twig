@@ -1,0 +1,270 @@
+{% import "Ceres::PageDesign.Macros.LayoutContainer" as LayoutContainer %}
+
+{{ component( "MyDruckStore::Customer.Components.UserLoginHandler" ) }}
+{{ component( "Ceres::PageDesign.Components.ShippingCountrySelect" ) }}
+{{ component( "Ceres::PageDesign.Components.MobileNavigation" ) }}
+{{ component( "MyDruckStore::ItemList.Components.ItemSearch" ) }}
+{{ component( "MyDruckStore::WishList.Components.WishListCount" ) }}
+{{ component( "Ceres::Basket.Components.BasketPreviewHover" ) }}
+
+{% set lang = services.sessionStorage.getLang() %}
+{% set enabledRoutes = config("IO.routing.enabled_routes") | split(', ') %}
+{% set activeCurrencies = config("Ceres.currency.available_currencies") | split(', ') %}
+{% set enableCurrencySelect = config("Ceres.currency.enable_selection") == "true" and activeCurrencies | length > 0 %}
+{% set currencyFormat = config("Ceres.currency.format") %}
+{% set currencyFormatSelect = config("Ceres.currency.format_selection") %}
+{% set companyLogo  = config("Ceres.header.company_logo") %}
+{% set showHeaderNavBar = config("Ceres.header.show_navbars") %}
+{% set companyName  = config("Ceres.header.company_name") %}
+{% set useMegaMenu  = config("Ceres.header.megamenu_levels") > 1 %}
+<header class="top-bar">
+    <div class="hh-td">
+        <div>
+            <div class="container-max">
+                <div class="row">
+                    {{ LayoutContainer.show("Ceres::Header.LeftSide") }}
+
+                    <ul id="controlsList" class="controls-list controls-list-top list-inline">
+                        <li class="list-inline-item control-kontakt">
+                            <a href="#">Kontakt</a>
+                        </li>   
+                        <li class="list-inline-item control-user m-l-2">
+                            <user-login-handler template="#vue-user-login-handler"
+                                                :user-data="{{ services.customer.getContact() | json_encode() }}"></user-login-handler>
+                        </li>
+                        {#<li class="list-inline-item dropdown control-languages">
+                            <a class="" data-toggle="collapse" href="#countrySettings" aria-expanded="false"
+                               aria-controls="countrySettings"
+                               data-parent="#controlsList">
+                                <i class="flag-icon flag-icon-{{ lang }}"></i>
+                            </a>
+                        </li>#}
+
+                        {% if enableCurrencySelect == "true" %}
+                            <li class="list-inline-item dropdown control-languages m-l-2">
+                                <a class=""
+                                   data-toggle="collapse"
+                                   href="#currencySelect"
+                                   aria-expanded="false"
+                                   aria-controls="currencySelect"
+                                   data-parent="#controlsList">
+                                    <span>{{ services.checkout.getCurrencyData()[currencyFormat] }}</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if "wish-list" in enabledRoutes or "all" in enabledRoutes %}
+                            <li class="list-inline-item control-wish-list m-l-2">
+                                <wish-list-count :init-ids="{{ services.wishList.getItemWishList() | json_encode }}"></wish-list-count>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="head-undermain">
+            <div class="container-max">
+                <div class="row rowflex">
+                    <div class="col-xs-12 col-lg-4 text-xs-center text-lg-left">
+                         <a class="logomain" href="/" title="{{ companyName }}">
+                            <img alt="{{ companyName }}" src="/layout/mydruckstore2014/img2017/Logo.png" />
+                         </a>
+                    </div>
+                    <div class="col-xs-12 col-lg-4 push-lg-4 bgmobilenav">
+                        <ul id="controlsList2" class="controls-list list-inline">
+                            <li class="list-inline-item control-imglist m-r-2 hidden-md-down">
+                                {#<a href="#" title="" class="m-r-1">
+                                    <img src="{{ plugin_path('MyDruckStore') }}/images/ts_ratings.png" alt="" />
+                                </a>#}
+                                <a href="#" title="">
+                                    <img src="{{ plugin_path('MyDruckStore') }}/images/ts_seals.png" alt="" />
+                                </a>
+                            </li>
+                            <li class="list-inline-item control-search hidden-lg-up">
+                                <button id="btnMainMenuToggler" v-open-mobile-navigation class="navbar-toggler hidden-lg-up mobileNavPoint" type="button">
+                                    <i class="fa fa-bars" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li class="list-inline-item control-search hidden-lg-up">
+                                <a class="anicon anicon-search-xcross mobileNavPoint" aria-label="toggle search"
+                                   data-toggle="collapse" href="#searchBox"
+                                   aria-expanded="{% if services.template.isSearch() %}true{% else %}false{% endif %}"
+                                   aria-controls="searchBox"
+                                   data-parent="#controlsList">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item control-basket">
+                                <a v-toggle-basket-preview href="#" class="toggle-basket-preview clearfix mobileNavPoint">
+                                    {% if config("Ceres.header.basket_values") != "sum" %}
+                                        <span class="badge-right" v-basket-item-quantity="this.$store.state.basket.data.itemQuantity">0</span>
+                                    {% endif %}
+                                    <span class="bsk-txt">
+                                        <span>Warenkorb</span>
+                                        {% if config("Ceres.header.basket_values") != "quantity" %}
+                                        {% if services.customer.showNetPrices() %}
+                                            <span class="badge" v-basket-item-sum="this.$store.state.basket.data.itemSumNet">0,00 {{ services.checkout.getCurrencyData()[currencyFormat] }}</span>
+                                        {% else %}
+                                            <span class="badge" v-basket-item-sum="this.$store.state.basket.data.itemSum">0,00 {{ services.checkout.getCurrencyData()[currencyFormat] }}</span>
+                                        {% endif %}
+                                     {% endif %}
+                                    </span>
+                                    <span class="bsk-ico">
+                                        <i v-waiting-animation="this.$store.state.basket.isBasketLoading" waiting-class="fa fa-refresh fa-spin" class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                    </span>
+                                </a>
+
+                                {% if config("Ceres.basket.preview_type") != "right" %}
+                                    <basket-preview
+                                            template="#vue-basket-preview-hover"
+                                            :basket-data="{{ services.basket.getBasketForTemplate() | json_encode() }}">
+                                    </basket-preview>
+                                {% endif %}
+                            </li>
+                        </ul>
+                        
+                    </div>
+                    <div class="nopadright pull-lg-4 col-lg-4">
+                        <div id="searchBox" class="cmp cmp-search-box collapse">
+                            <item-search template="#vue-item-search"></item-search>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+        
+        
+        <nav class="topmainnav navbar{% if useMegaMenu %} megamenu{%endif%}">
+            <div class="container-max">
+              <div class="row">
+                  <div id="mainNavbarCollapsable">
+                      <ul class="breadcrumb">
+                          <li class="btnClose"></li>
+                      </ul>
+                      {% if showHeaderNavBar == "top" or showHeaderNavBar == "both" or not services.template.isCategory() %}
+                          {# includeCached('Ceres::PageDesign.Partials.Header.NavigationList.twig') #}
+                          {# include "Ceres::PageDesign.Partials.Header.NavigationList" #}
+                      {% endif %}
+                      {#
+                      105 Schlafzimmer
+                      931 Wohnzimmer
+                      106 Kinderzimmer
+                      107 Küche
+                      933 Afrika
+                      114 Skylines
+                      349 Meer
+                      115 Landschaften
+                      #}
+                      {% set footerCategories = [104, 55, 30, 86, 163, 248, 185] %}
+                      <ul class="mainmenu clearfix">
+                        {% for catID in footerCategories %}
+	                        {% set cat = services.category.get(catID, lang) %}
+	                        {% if cat is not null %}
+	                            <li>
+	                                <a href="{{ services.category.getURL( cat ) }}"  v-render-category="{ id: {{ cat.id }}, type: '{{ cat.type }}', alwaysOpen: true }" >
+	                                    
+	                                    {% if cat.id==248 %}
+	                                        Holzbilder
+	                                    {% elseif cat.id==185 %}
+	                                        Aluminiumbilder
+	                                    {% else %}
+	                                       {{ cat.details.first.name }} 
+	                                    {% endif %} 
+	                                </a>
+	                            </li>
+                        	{% endif %}
+                    	{% endfor %}
+                		<li>
+                            <a href="#sale">Sale%z</a>
+                        </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </nav>              
+</header>
+
+
+{% if category.linklist == "Y" %}
+    {% set initialCategory = { id: category.id } %}
+{% else %}
+    {% set initialCategory = category %}
+{% endif %}
+
+<mobile-navigation :navigation-tree-data="{{ categories | json_encode }}" :initial-category="{{ initialCategory | json_encode }}" template="#vue-mobile-navigation"></mobile-navigation>
+
+<div class="container-max page-header">
+    <div class="row">
+        
+
+        {% if enableCurrencySelect == "true" %}
+        <div id="currencySelect" class="cmp cmp-currency-select collapse">
+            <div class="container-max">
+                <div class="currency-select-inner row">
+
+                    <div class="currency-list col-xs-12">
+                        <div class="list-title">
+                            <strong>{{ trans("Ceres::Template.headerCurrency") }}</strong>
+                            <hr>
+                        </div>
+                        <ul>
+                            {% for currency in services.checkout.getCurrencyList() if currency.name in activeCurrencies or activeCurrencies[0] == 'all' or currency.name == services.checkout.getCurrencyData().name %}
+                            <li{% if currency.name == services.checkout.getCurrencyData().name %} class="active"{% endif %}>
+                                <a href="{{ queryString({"currency": currency.name}) }}" rel="nofollow">
+                                    {% if currencyFormatSelect == 'all' %}
+                                        {{ currency.name }} ({{ currency.symbol }})
+                                    {% else %}
+                                        {{ currency[currencyFormatSelect] }}
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <shop-country-settings country-flag-prefix="flag-icon-" :localization-data="{{ services.localization.getLocalizationData() | json_encode }}">
+            <div id="countrySettings" class="row cmp cmp-country-settings no-margin collapse">
+                <div class="container-max">
+                    <div class="row no-padding">
+                        <div class="country-settings-inner languages col-lg-6">
+
+                            <div class="language-settings">
+                                <div class="list-title">
+                                    <strong>{{ trans("Ceres::Template.headerSelectLanguage") }}</strong>
+                                    <hr>
+                                </div>
+
+                                {% set languageList = services.webstoreConfig.getActiveLanguageList() %}
+                                {% set languageUrls = services.url.getLanguageURLs() %}
+                                <ul>
+                                    {% for language in languageList %}
+                                        <li{% if lang == language %} class="active"{% endif %}>
+                                            <a href="{% if languageUrls[language] is defined %}{{ languageUrls[language] ~ queryString() }}{% else %}/{{ language }}{{ urls.trailingSlashSuffix }}{% endif %}" data-update-url>
+                                                <i class="flag-icon flag-icon-{{ language }}"></i>
+                                                {{ trans("Ceres::Template.header" ~ language | capitalize) }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="country-settings-inner countries col-lg-6">
+                            <div class="shipping-settings">
+                                <div class="list-title">
+                                    <strong>{{ trans("Ceres::Template.headerSelectShippingCountry") }}</strong>
+                                    <hr>
+                                </div>
+                                <shipping-country-select :disable-input="{{ services.template.isCheckout() | json_encode() }}"></shipping-country-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </shop-country-settings>
+    </div>
+</div>

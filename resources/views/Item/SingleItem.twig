@@ -1,0 +1,160 @@
+{% extends getPartial('page-design') %}
+{% import "Ceres::PageDesign.Macros.LayoutContainer" as LayoutContainer %}
+
+{% set itemData = config("Ceres.item.data") | split(', ') %}
+{% set configItemName = config("Ceres.item.name") %}
+{% set variations = services.item.getVariationAttributeMap( item.documents[0].data.item.id  ) %}
+{% set basePriceList = getBasePriceList( services.item.getVariationList( item.documents[0].data.item.id  ) ) %}
+{% set crossSellingList = services.item.getItemCrossSellingList( item.documents[0].data.item.id  ) %}
+{% set enabledRoutes = config("IO.routing.enabled_routes") | split(', ') %}
+{% set lang = services.sessionStorage.getLang() %}
+{% block PartialHead %}
+    <meta property="og:title" content="{{ item.documents[0].data | itemName }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ services.webstoreConfig.getWebstoreConfig().domainSsl }}{{ item.documents[0].data | itemURL }}" />
+    <meta property="og:image" content="{{  item.documents[0].data.images.all[0].url }}" />
+    <meta property="og:description" content="{{ item.documents[0].data.texts.shortDescription }}" />
+
+    <link rel="canonical" href="{{ services.webstoreConfig.getWebstoreConfig().domainSsl }}{{ item.documents[0].data | itemURL }}">
+    <script type="application/ld+json">{"@context":"http://schema.org/","@type":"Product","name":"{{ item.documents[0].data | itemName }}","category":"item.","releaseDate":"{{ item.documents[0].data.variation.releasedAt }}","image":"{{ item.documents[0].data.images.all[0].urlPreview }}","identifier":"{{ item.documents[0].data.variation.id }}","description":"{{ item.documents[0].data.texts.description }}","disambiguatingDescription":"{{ item.documents[0].data.texts.shortDescription }}","manufacturer":{"@type":"Organization","name":"{{ item.documents[0].data.item.manufacturer.externalName }}"},"model":{"@type":"ProductModel","isVariantOf":"{{ item.documents[0].data.item.id }}","model":"{{ item.documents[0].data.variation.model }}"},"offers":{"@type":"Offer","priceCurrency":"{{ item.documents[0].data.calculatedPrices.default.currency }}","price":"{{ item.documents[0].data.calculatedPrices.default.price }}","availability":"{{ item.documents[0].data.variation.availability.names.name }}","itemCondition":"{{ item.documents[0].data.item.condition.name }}","serialNumber":"{{ item.documents[0].data.variation.number }}"},"depth":{"@type":"QuantitativeValue","value":"{{ item.documents[0].data.variation.lengthMM }}"},"width":{"@type":"QuantitativeValue","value":"{{ item.documents[0].data.variation.widthMM }}"},"height":{"@type":"QuantitativeValue","value":"{{ item.documents[0].data.variation.heightMM }}"},"weight":{"@type":"QuantitativeValue","value":"{{ item.documents[0].data.variation.weightG }}"}}</script>
+
+    <title>{{ item.documents[0].data | itemName }}</title>
+    
+    <meta name="keywords" content="{{ item.documents[0].data.texts.keywords }}" />
+    <meta name="description" content="{{ item.documents[0].data.texts.metaDescription }}" />
+    <meta name="robots" content="ALL" />
+    <script>           
+    document.addEventListener("onVariationChanged", function(variation){
+        $('.isMainHasAttributesEmpty').hide();
+        $('.isMainHasAttributes').show();
+        $('.owl-thumbs').css('visibility','hidden');
+        $('.owl-thumbs').trigger('destroy.owl.carousel');
+        setTimeout(function(){
+            initOwlThumbs();
+            $('.owl-thumbs').css('visibility','visible');
+            MagicZoom.stop();
+            MagicZoom.start();
+        }, 1);
+    });
+    </script>
+   
+{% endblock %}
+{% block PageBody %}
+    {# services.lastSeen.setLastSeenMaxCount(config("Ceres.item.lists.last_seen")) #}
+    {{ component( "MyDruckStore::Item.Components.VariationSelect" ) }}
+    {{ component( "MyDruckStore::Item.Components.ItemImageCarousel" ) }}
+    {{ component( "MyDruckStore::Basket.Components.AddToBasket" ) }}
+    {{ component( "Ceres::Item.Components.OrderProperties" ) }}
+    {{ component( "Ceres::Item.Components.GraduatedPrices" ) }}
+    {{ component( "MyDruckStore::Item.Components.AddToWishList" ) }}
+    {{ component( "MyDruckStore::Item.Components.SingleItemData" ) }}
+    {{ component( "MyDruckStore::Item.Components.SingleItemImages" ) }}
+    <div class="single container-max">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="bgwhite bgwhite_spacer">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h1 class="item_title">
+                                    {{ item.documents[0].data | itemName |replace({'[[':'<span>',']]':'</span>'}) | raw }}
+                                </h1>
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="iartnr">Artikel-Nr: {{ item.documents[0].data.variation.number }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="clearfix">
+                                    <div class="pull-right">{{ LayoutContainer.show("MyDruckStore::SingleArticle.Bewertungen", item.documents[0].data) }}</div>
+                                </div>
+                            </div>
+                        </div>        
+                        <div class="row">
+                            <div class="col-md-8 single-leftside m-b-1">
+                                {% if item.documents[0].data.calculatedPrices.rrp.price>item.documents[0].data.calculatedPrices.default.price or item.documents[0].data.calculatedPrices.default.categoryDiscount>0 %}
+                                    <span class="rrpsign rrpsign-item">%</span>
+                                {% endif %}
+                                <single-item v-cloak template="#vue-single-item-images" :item-data="{{ item | json_encode }}" :variation-list-data="{{ variations | json_encode }}" :attribute-name-map="{{attributeNameMap | json_encode}}">
+                                </single-item>
+                                {#<item-image-carousel image-url-accessor="url" template="#vue-item-image-carousel"></item-image-carousel>#}     
+                            </div>
+                            <div class="col-md-4 single-rightside is_stuck">
+                                <div class="single-right-inner">
+                                    
+                                    <single-item v-cloak template="#vue-single-item" :item-data="{{ item | json_encode }}" :variation-list-data="{{ variations | json_encode }}" :attribute-name-map="{{attributeNameMap | json_encode}}">
+                                    </single-item>    
+                                    
+                                   <!-- hier -->
+                                   <!-- hier end -->
+                                    {{ LayoutContainer.show("Ceres::SingleItem.AdditionalContentAfterAddToBasket", item.documents[0].data) }}
+          
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="shareTxtItem pull-left">Teilen auf:</div>
+                                            <div class="shariff " data-services='["facebook","googleplus","twitter","whatsapp"]' data-lang="{{ services.sessionStorage.getLang() }}" data-theme="round"></div> 
+                                        </div>
+                                    </div>    
+                                </div>
+                                
+                            </div>
+                        </div>
+              
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p class="h3">Produktinformationen</p>
+                            </div>
+                            <div class="col-md-6 m-b-3">
+                                <div class="section_item_details">
+                                    <!-- ITEM DESCRIPTION -->
+                                    <div id="details-{{ item.documents[0].data.variation.id }}">
+                                        <div class="m-y-2">
+                                            {{ item.documents[0].data.texts.description|raw }} 
+                                        </div>
+                                    </div>
+                                    {% if not item.documents[0].data.texts.technicalData == '' and('item.technical_data' in itemData or 'all' in itemData) %} 
+                                    <div id="data-{{ item.documents[0].data.variation.id }}">
+                                        <div class="m-y-2">
+                                            {{ item.documents[0].data.texts.technicalData|raw }} 
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {{ LayoutContainer.show("Ceres::SingleItem.AddDetailTabsContent") }}         
+                               </div>
+                            </div>
+                            <div class="col-md-6 m-b-3">
+                                <div class="item-usp">
+                                    <p class="bold">Besonderheiten unserer 3D-Wandtattoos:</p>
+                                    <p class="titleUsp">Material und Allgemein</p>
+                                    <ul>
+                                        <li>Selbstklebende Vinylfolie mit grafischem 3D-Effekt </li>
+                                        <li>Hauchdünn wie gemalt </li>
+                                        <li>Rückstandslos entfernbar</li>
+                                        <li>Nahezu unbegrenzt haltbar im Innenbereich</li>
+                                        <li>Verklebbar u.a. auf Tapeten, Raufaser, Fliesen, Glas, Metall, Holz und Kunststoff</li>
+                                    </ul>
+                                    <p class="titleUsp m-t-2">Druck und Farben</p>
+                                    <ul>
+                                        <li>Fotorealistische Qualität – kleinste Details werden brillant wiedergegeben </li>
+                                        <li>Lange Farbechtheit mit hoher Farbintensität</li>
+                                        <li>Hochglänzende Optik für kräftige und leuchtende Farben</li>
+                                        <li>Geruchslos und umwelfreundliche Latextinte </li>
+                                    </ul>
+                                </div>
+                                <div class="m-t-3">
+                                    <img src="{{ plugin_path('MyDruckStore') }}/images/usp_made.png" alt="Made in Germany" />
+                                </div>
+                            </div>
+                        </div>                   
+                        {{ LayoutContainer.show("Ceres::SingleItem.ItemListContainer", item.documents[0].data) }}
+                        {{ LayoutContainer.show("Ceres::SingleItem.FeedbackContainer", item) }}
+                    
+                </div>
+           </div>
+        </div>
+    </div>
+ 
+
+{% endblock %}

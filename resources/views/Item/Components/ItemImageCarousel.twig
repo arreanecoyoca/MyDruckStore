@@ -1,0 +1,30 @@
+{% set configItemName = config("Ceres.item.name") %}
+<script type="x/template" id="vue-item-image-carousel">
+<div itemscope itemtype="http://schema.org/Thing">
+    <div class="ItemImgWrap">
+        <a :href="currentVariation.documents[0].data.images | itemImages('url') | itemImage" id="ItemImgZoom" class="MagicZoomPlus" data-options="transitionEffect: false; lazyZoom: true; cssClass: white-bg; zoom-height:500px; zoomPosition: inner;" data-mobile-options="zoomMode: off">
+            <img :alt="getAltText(currentVariation.documents[0].data.images)" class="img-responsive" :src="currentVariation.documents[0].data.images | itemImages('url') | itemImage" itemprop="image">
+        </a>
+        <div v-if="currentVariation.documents[0].data.images.all.length > 1">
+            <button class="zoombtnnav zoomnavleft">
+                <span class="icon-left-open-big"></span>
+            </button>
+            <button class="zoombtnnav zoomnavright">
+                <span class="icon-right-open-big"></span>
+            </button>  
+        </div>
+    </div>
+    <div class="zoomnavlist"></div>
+    <div class="owl-thumbs owl-carousel hidden-sm-down m-t-2">
+
+            <a :href="imagePreview.url" rel="zoom-id:ItemImgZoom" :data-image="imagePreview.url" v-for="imagePreview in currentVariation.documents[0].data.images.all"  class="owl-thumb">
+                <img
+                :alt="getAltText(imagePreview)"
+                class="owl-lazy"
+                :data-src="imagePreview.urlPreview"  >
+            </a>
+
+    </div>
+</div>
+</script>
+

@@ -1,0 +1,4 @@
+{% import "MyDruckStore::Category.Macros.CategoryTree" as Tree %}
+{% set lang = services.sessionStorage.getLang() %}
+{% set categoryBreadcrumbs = services.category.getHierarchy() %}
+{{ Tree.get_sidemenu(categoryBreadcrumbs, categories[0].children, "") }}

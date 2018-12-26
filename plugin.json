@@ -1,0 +1,41 @@
+{
+    "version"           :   "0.0.1",
+    "license"           :   "AGPL-3.0",
+    "name"              :   "MyDruckStore",
+    "marketplaceName"   :   {"de":"MyDruckStore","en":"MyDruckStore"},
+    "pluginIcon"        :   "icon_plugin_xs.png",
+    "authorIcon"        :   "icon_author_xs.png",
+    "email"             :   "kontakt@frontendbaer.de",
+    "phone"             :   "+49 561 43072451",
+    "description"       :   "MyDruckStore",
+    "shortDescription"  :   { "de": "MyDruckStore Theme", "en": "MyDruckStore Theme" },
+    "namespace"         :   "MyDruckStore",
+    "author"            :   "frontendbär",
+    "keywords"          :   ["plentymarkets", "plugins", "layout", "theme", "ceres"],
+    "price"             :   0,
+    "categories"        :   [3518],
+    "type"              :   "theme",
+    "require"           :   ["Ceres"],
+    "serviceProvider"   :   "MyDruckStore\\Providers\\MyDruckStoreServiceProvider",
+    "dataProviders"     :
+    [
+        {
+            "key"           :"MyDruckStore\\Containers\\MyDruckStoreContainer",
+            "name"          :"Stylesheet",
+            "description"   :"Add changes to the CSS file"
+        },
+        {
+            "key"           :"MyDruckStore\\Containers\\MyDruckStoreItemListContainer1",
+            "name"          :"First item list",
+            "description"   :"Display a configurable list of items in your online store"
+        }
+    ],
+    "containers"        :
+    [
+      {
+        "key"           : "SingleArticle.Bewertungen",
+        "name"          : "Container für Bewertungen",
+        "description"   : "Bewertungen hinzufügen hier"
+      }
+    ]
+}

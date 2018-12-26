@@ -1,0 +1,188 @@
+{% extends getPartial('page-design') %}
+{% block PageBody %}
+<section class="section-home-slider">
+    <div class="home container-max">
+        <div class="row">
+            <div class="colslider">
+                 <div class="home-slider owl-carousel">
+                {% for i in 1..6 %}
+                    {% if config("MyDruckStore.slider_image_"~i) | trim is not empty %}
+                    <div class="home-slider-item">
+                        <a href="{{ config("MyDruckStore.slider_link_"~i)  }}" title="{{ config("MyDruckStore.slider_txt_"~i) | striptags }}">
+                            <img src="{{ config("MyDruckStore.slider_image_"~i) }}" alt="{{ config("MyDruckStore.slider_txt_"~i) | striptags }}" class="img-fluid">
+                            <span class="slider-txts">
+                                <span class="slider-title">
+                                    {{ config("MyDruckStore.slider_title_"~i) }}
+                                </span>
+                                <span class="slider-txt hidden-sm-down">
+                                    {{ config("MyDruckStore.slider_text_"~i) }}
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endfor %} 
+                 </div>
+            </div>
+        </div>    
+    </div>
+</section>
+<section>
+    <div class="container-max">
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="line-title"><span>Ihre Vorteile bei myDRUCK-store</span></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-25 m-b-2 clearfix">
+                <div class="home-usp-img">
+                    <span class="icon-dwandtatto-index-ihre-vorteile-bei-wallart-viele"></span>
+                </div>
+                <div class="home-usp-txt">
+                    <span>Viele Zahlungsmöglichkeiten</span>
+                    <span>darunter auch Zahlung auf Rechnung oder mit Kreditkarte</span>
+                </div>
+            </div>
+            <div class="col-md-25 m-b-2 clearfix">
+                <div class="home-usp-img">
+                    <span class="icon-dwandtatto-index-ihre-vorteile-bei-wallart-keine"></span>
+                </div>
+                <div class="home-usp-txt">
+                    <span>Speziell für Sie angefertigt!</span>
+                    <span>Wir haben keine Lagerware! Unsere Artikel werden immer nach Bestellungseingang neu hergestellt.</span>
+                </div>
+            </div>
+            <div class="col-md-25 m-b-2 clearfix">
+                <div class="home-usp-img">
+                    <span class="icon-dwandtatto-index-ihre-vorteile-bei-wallart-resiklo"></span>
+                </div>
+                <div class="home-usp-txt">
+                    <span>Sicherheit</span>
+                    <span>kein Risiko: Sichere Bezahlung & 14 Tage Widerrufsrecht</span>
+                </div>
+            </div>
+            <div class="col-md-25 m-b-2 clearfix">
+                <div class="home-usp-img">
+                    <span class="icon-dwandtatto-index-ihre-vorteile-bei-wallart-hohequalitat"></span>
+                </div>
+                <div class="home-usp-txt">
+                    <span>Qualität zum fairen Preis</span>
+                    <span>Hohe Qualität in Material, Druck & Design</span>
+                </div>
+            </div>
+            <div class="col-md-25 m-b-2 clearfix">
+                <div class="home-usp-img">
+                    <span class="icon-dwandtatto-index-ihre-vorteile-bei-wallart-extremschnell"></span>
+                </div>
+                <div class="home-usp-txt">
+                    <span>Schnell und bewusst</span>
+                    <span>extrem schnell - Versand i.d.R. innerhalb von 24-48 h</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section-home-cat">
+    <div class="home container-max">
+        <div class="row rowFlexHome">
+             {% set categories2 = services.category.getChildren(104, lang) %}
+             {% set homeCategories = [104, 55, 30, 86, 163, 248, 185, 249, 178, 180, 161,  49, 789, 103, 896, 922, 923, 1278, 929, 2443, 938, 2495] %}
+             {% for catID in homeCategories %}
+             {% set catDesc = services.category.get(catID, lang) %}
+            {# for category in categories2 #}
+                {% if catDesc.details | length > 0 %}
+                    {# set currentScopeUrl = "/" ~ category.details[0].nameUrl #}
+                    {# set catDesc = services.category.get(category.id, lang) #}
+                        <div class="col-xs-6 col-md-3 home-cat-item">
+                            {% set caturl = services.category.getURL( catDesc ) %}
+                            <a href="{{ caturl }}" title="{{ catDesc.details[0].name }}">
+                                <span class="hci-item">
+                                    <span class="hci-image"><img data-original="/documents/{{ catDesc.details[0].imagePath }}"  alt="{{ catDesc.details[0].name }}" class="lazyCat img-fluid" src="" /> </span>
+                                    <span class="hci-name">{{ catDesc.details[0].name }}</span>
+                                </span>
+                            </a>
+                        </div>
+                {% endif %}
+            {# endfor #}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{#        
+<section class="section-home-cat">
+    <div class="home container-max">
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="line-title"><span>Bunte Digitalaufkleber</span></p>
+            </div>
+        </div>
+       <div class="row">
+             {% set categories2 = services.category.getChildren(938, lang) %}
+            {% for category in categories2 %}
+                {% if category.details | length > 0 %}
+                    {% set catDesc = services.category.get(category.id, lang) %}
+                    {% set caturl = services.category.getURL( category ) %}
+                        <div class="col-xs-6 col-md-3 home-cat-item">
+                            <a href="{{ caturl }}" title="{{ category.details[0].name }}">
+                                
+                                <span class="hci-item">
+                                    <span class="hci-image"><img data-original="/documents/{{ catDesc.details[0].imagePath }}"  alt="{{ catDesc.details[0].name }}" class="lazyCat img-fluid" /> </span>
+                                    <span class="hci-name">{{ category.details[0].name }}</span>
+                                </span>
+                            </a>
+                        </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>  #}      
+<section>
+    <div class="container-max">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="seohome">
+                    <p>Willkommen auf der Homepage von myDRUCK-store, Ihrem Helfer für ein schöneres Zuhause. Neben unzähligen Möglichkeiten Ihre eigenen vier Wände individuell, originell und stilvoll zu gestalten, finden Sie hier auch Individualisierungs- und Gestaltungsoptionen für Ihr Fahrzeug. Ob Sie also nach einen neuen Wandtattoo, einem geschmackvollem Bild auf Leinwand, einem Wandbild, einem 3D Wandtattoo, neuen Fliesenaufklebern, einem Acrylglasbild, einem Autoaufkleber oder einem individuellen Roll-Up suchen – wir haben unser Bestes gegeben, um Ihre Gestaltungswünsche und Kreativität bestmöglich umzusetzen. Und sollte Ihr Wunschmotiv bei unseren zahlreichen Designs nicht zu finden sein, so erstellen wir Ihnen schnell, einfach und unkompliziert Ihr eigenes Wandtattoo, Leinwandbild oder Acrylbild-Motiv.</p>
+
+<p>Verleihen Sie Ihren Vier Wänden das gewisse Etwas</p>
+
+<p>Ihr Zuhause sagt viel über Sie aus. Mögen Sie es eher gemütlich und praktisch oder sind Sie ein Purist? Stilvoll elegant oder doch eher bunt und verspielt? Machen Sie Ihre Wohnung zu einem echten Hingucker und zeigen Sie Ihren Gästen wie originell und kreativ Sie sind. Wählen Sie ein Wandtattoo aus unseren unzähligen Designvorschlägen oder lassen Sie uns Ihre individuellen Wünsche schnell und unkompliziert umsetzen. Ob Wandtattoos, Autoaufkleber, Leinwandbilder, Fliesenbilder, Acrylglasbildern oder einem Wandbild, bei uns finden sie alles, was Ihr Zuhause zu einem besonderen Ort macht. Sie hätten gerne Ihr Hochzeitsfoto auf einer Leinwand bzw. als Leinwandbild? Kein Problem! Auch Landschaftsbilder, die Skyline Ihrer Lieblings-Stadt oder kunstvolle Motive können der letzte Schliff für Ihre Raumgestaltung sein. Sie bestimmen das Motiv. Ein Acrylglasbild richtig platziert, kann einen Raum aufwerten und mit unseren Fliesenbildern können Sie Ihr Bad ganz ohne teure Umbauarbeiten mit kleinem Aufwand in neuem Glanz erstrahlen lassen. Falls aber doch das Wohnzimmer oder Kinderzimmer aufgewertet werden soll, nutzen Sie unsere 3D – Aufkleber, auch unter 3D Wandtattoos bekannt, um mit mit Hilfe eines grafischen 3D Effekts die Wände modern erstrahlen zu lassen. Sie kochen gerne und finden es schade, dass Ihnen die Wände beim Schneiden oder Braten immer „eingesaut“ werden? Auch hier bieten wir eine schnelle, unkomplizierte, preiswerte und zudem stilvolle Lösung mit unseren vielseitigen Spritzschutz -Designs. Tauchen Sie ein in eine Welt, die weitaus mehr zu bieten hat als nur Dekoration für Ihre Wände. Erschaffen Sie ein völlig neues Raumgefühl. Kombinieren Sie Wandtattoos beliebig mit Leinwandbildern oder einem Acrylglasbild.
+Individualität und Aussagekraft</p>
+
+<p>Sie haben ein Motto, dass Sie durch Ihr Leben begleitet? Verraten Sie es uns und schon bald kann Ihr Lieblings-Spruch Ihrem Zuhause eine Seele verleihen. Natürlich können Sie auch aus einem unserer zahlreichen Wandtattoos mit Zitaten und Sprüchen wählen. Einzelne Buchstaben, ganze Sätze – alles kein Problem. Auch Blumenranken oder aber ein Wandtattoo mit Uhr lassen Sie sich von uns inspierieren. Durchstöbern Sie unsere vielfältige Designauswahl oder kreieren Sie Ihre eigenen Schriftzüge. Von der Homepage bis zu Liebeserklärung, mit einem Wandtattoo oder Autoaufkleber bringen sie Ihre Message mit Sicherheit rüber. Individualisieren Sie Ihr Auto mit einem myDruck-store Autoaufkleber. Lassen Sie es z.B. durch Rallyestreifen sportlicher erscheinen, zeigen Sie der Welt wer mit im Auto fährt oder lassen Sie mithilfe eines Autoaufklebers mit einem frechen Spruch oder einem Tribal jeden Verkehrsteilnehmer wissen, mit wem er es zu tun hat. Auch Seitenstreifen oder Startnummer-Aufkleber in jeglichen Variationen finden Sie unter Autoaufklebern. Die Möglichkeiten sind nur durch ihre Phantasie limitiert.
+Falls Sie sich mittlerweile mehrfach gefragt haben, wie sich ein Wandtattoo oder aber ein Wandbilder bzw. Fliesenaufkleber anbringen lässt, dann haben wir natürlich auch hier für Abhilfe gesorgt. Nutzen Sie einfach unsere Verklebeanleitung für Wandtattoos in der Service und Hilfe Sektion
+Urlaub in den eigenen vier Wänden</p>
+
+<p>Die meisten Menschen sind gerne im Hotel. Dort scheint alles so perfekt zusammen zu passen. Diese Harmonie überträgt sich von der Umgebung auf die Menschen. Das myDRUCK-store Team hilft regelmäßig bei der Gestaltung von Hotelzimmern und Boutique-Hotels. Einen Raum stimmig zu gestalten ist kein Hexenwerk mit dem richtigen Partner an Ihrer Seite. Dank myDRUCK-store können Sie auch ihr Zuhause abrunden. Fehlt Ihrer Küche das gewisse Etwas? Wie wäre es mit einem passenden Wandtattoo oder einem Acrylbild um den Raum aufzuwerten? Sie wünschen sich an den Strand vom letzten Urlaub zurück? Dann lassen Sie uns ihre schönsten Urlaubserinnerungen auf eine Leinwand drucken. Durch dieses Leinwandbild oder einem Wandbild bleiben diese tollen Momente unvergesslich und es ist fast so, als wären Sie immer noch an Ihrem Lieblingsort. Oder repräsentieren Sie Ihre Stadt. Ein Skyline-Wandtattoo oder Leinwandbild sagt mehr als tausend Worte. Jeder kann schnöde Fotos seiner Familie in Rahmen aufhängen. Wie wäre es mit einem Acrylglasbild mit Ihren Lieben darauf? Zeigen Sie Ihre Kreativität und untermalen Sie Ihren Stil.
+Wir sind ihr Partner und Hersteller im Bereich Dekoration sowohl für den Innen- als auch Außenbereich. Alle unsere Produkte werden in Deutschland von uns hergestellt.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        {#
+<section class="section-home-cat">
+    <div class="home container-max">
+        <div class="row">
+            {% for category in categories %}
+                {% if category.details | length > 0 %}
+                    {% set currentScopeUrl = "/" ~ category.details[0].nameUrl %}
+                    {% set catDesc = services.category.get(category.id, lang) %}
+
+                        <div class="col-xs-6 col-md-2 home-cat-item">
+
+                            <a href="{{ currentScopeUrl }}" title="{{ category.details[0].name }}">
+                                <span class="hci-name">{{ category.details[0].name }}</span>
+                                <span class="hci-item">
+                                    <span class="hci-image"><img src="/documents/{{ category.details[0].imagePath }}"  alt="{{ category.details[0].name }}" /> </span>
+                                    <span class="hci-short">{{ catDesc.details[0].shortDescription | raw }}</span>
+                                </span>
+                            </a>
+                        </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>#}
+        
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends getPartial('page-design') %}
+{% set lang = services.sessionStorage.getLang() %}
+{% set categoryByRoute = services.category.get(category.id, lang) %}
+{% set catTemplate = include(category_template( category.id, lang, frontend.system.webstoreId ) , ignore_missing = true)  %}
+{% if catTemplate is null and catTemplate is empty %}
+   {% set catTemplate = include(category_template( category.id, lang, 0) , ignore_missing = true)  %} 
+{% endif %} 
+{% block PageBody %}
+    {# categoryByRoute #}
+    <div class="container-max section-content">
+        <div class="row">
+            <div class="col-xs-3 hidden-md-down">
+                <div class="content-leftside m-b-3 m-t-3">
+                    <div class="sidebar-categories">
+                        
+                        {% set categories2 = services.category.getNavigationTree("content", lang,3) %}
+                      
+                        {% if categoryByRoute.level==2 %}
+                            {% set cat = services.category.get(categoryByRoute.parentCategoryId, lang) %}
+                            <p class="h3 category-title">{{ cat.details[0].name }}</p>
+                              
+                            {% set categories2 = services.category.getChildren(categoryByRoute.parentCategoryId, lang) %}
+                        {% else %}
+                            <p class="h3 category-title">{{ category.details[0].name }}</p>
+                            {% set categories2 = services.category.getChildren(categoryByRoute.id, lang) %}
+                        {% endif %}
+                        <ul>
+                            {% for child in categories2 %}
+                            {% set caturl = services.category.getURL( child ) %}
+                                {% if child.details[0].name!="" and child.linklist=="Y" %}
+                                <li class="nav-item {% if categoryByRoute.id==child.id %}active{% endif %}">
+                                    <a href="{{ caturl }}" title="{{ child.details[0].name }}">
+                                        {{ child.details[0].name }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {#
+                        <ul>
+                            {{ categoryByRoute | json_encode() }}
+                        {% for child in categories2 %}
+                            {% set caturl = services.category.getURL( child ) %}
+                            
+                            {% if child.children|length > 0 %}
+                                {% if child.id == categoryByRoute.details.first.id %}
+                                {% endif %}
+                            <li class="nav-item">
+                                <a href="{{ caturl }}" title="{{ child.details[0].name }}">
+                                    {{ child.details[0].name }}
+                                </a>
+                                
+                                    <ul>
+                                        
+                                    {% for child2 in child.children %}
+                                       {% set caturl2 = services.category.getURL( child2 ) %}
+                                       <li class="nav-item">
+                                            <a href="{{ caturl2 }}" title="{{ child2.details[0].name }}">
+                                                {{ child2.details[0].name }}
+                                            </a>
+                                       </li>
+                                    {% endfor %}
+                                    </ul>
+                                
+                            </li>
+                            {% endif %}
+                         {% endfor %}
+                        </ul>#}
+                    </div>
+
+                    {{ LayoutContainer.show("Ceres::CategoryItem.SideNavBarBottom") }}
+
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="bgwhite bgwhite_spacer content-rightside m-b-3 m-t-2">
+                    {#<div class="linehead_cat text-xs-center text-sm-left"><h1>{{ categoryByRoute.details.first.name }}</h1></div> <hr class="catline">#}
+                    {% if catTemplate is null %}
+                        {{ categoryByRoute.details[0].description | raw }}
+                    {% else %}
+                        {{ catTemplate | raw }}  
+                    {% endif %}
+                </div>
+            </div>
+        </div>    
+    </div>
+{% endblock %}
+
+{# DEPRECATED #}
+
+{% block PartialHead %}
+  {% if categoryByRoute.details[0].metaTitle!="" %}
+    <title>{{ categoryByRoute.details[0].metaTitle }}</title>
+    {% else %}
+    <title>{{ categoryByRoute.details[0].name }}</title>
+    {% endif %}
+    <meta name="keywords" content="{{ categoryByRoute.details[0].metaKeywords }}" />
+    <meta name="description" content="{{ categoryByRoute.details[0].metaDescription }}" />
+    <meta name="robots" content="{{ categoryByRoute.details[0].metaRobots }}" />
+    {% if categoryByRoute.details[0].canonicalLink!="" %}
+    <link rel="canonical" href="{{ categoryByRoute.details[0].canonicalLink }}" />
+    {% else %}
+        {% set currentScopeUrl = "/" ~ category.details[0].nameUrl %}
+        <link rel="canonical" href="{{ services.webstoreConfig.getWebstoreConfig().domainSsl }}{{ currentScopeUrl }}" />
+    {% endif %}
+{% endblock %}

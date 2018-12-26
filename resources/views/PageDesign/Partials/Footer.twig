@@ -1,0 +1,154 @@
+<footer class="footer">
+    <div class="{% if topButtonPosition == "right" %}back-to-top{% else %}back-to-top-center{% endif %} hidden-sm-down">
+        <i class="fa fa-chevron-up"></i>
+    </div>
+
+    <div class="to-top hidden-md-up" v-scroll-to-top>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </div>
+
+    <div class="container-max">
+        <div class="row">
+            <div class="col-md-2 col-lg-2">
+                <p class="footer-title">Kategorien</p>
+                {% set footerCategories = [104, 55, 30, 86, 163, 248, 185, 249, 178, 180, 161,  49, 789, 103, 896] %}
+                <ul class="footer-menu">
+                    {% for catID in footerCategories %}
+                    {% set cat = services.category.get(catID, lang) %}
+                        {% if cat is not null %}
+                            <li>
+                                <a href="{{ services.category.getURL( cat ) }}" title="{{ cat.details.first.name }}">
+                                    {{ cat.details.first.name }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li>
+                        <a href="#">
+                         Sale
+                      </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-2 col-lg-2">
+                {% set categoryByRoute = services.category.get(1247, lang) %}
+                {% set categories2 = services.category.getChildren(categoryByRoute.id, lang) %}
+                <p class="footer-title">{{ categoryByRoute.details[0].name }}</p>
+                <ul class="footer-menu">
+                    {% for child in categories2 %}
+                        {% if child.linklist=="Y" %}
+                            {% set caturl = services.category.getURL( child ) %}
+                            <li class="nav-item {% if categoryByRoute.id==child.id %}active{% endif %}">
+                                <a href="{{ caturl }}" title="{{ child.details[0].name }}">
+                                    {{ child.details[0].name }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-2 col-lg-2">
+                {% set categoryByRoute = services.category.get(1254, lang) %}
+                {% set categories2 = services.category.getChildren(categoryByRoute.id, lang) %}
+                <p class="footer-title">{{ categoryByRoute.details[0].name }}</p>
+                <ul class="footer-menu">
+                    {% for child in categories2 %}
+                        {% if child.linklist=="Y" %}
+                            {% set caturl = services.category.getURL( child ) %}
+                            <li class="nav-item {% if categoryByRoute.id==child.id %}active{% endif %}">
+                                <a href="{{ caturl }}" title="{{ child.details[0].name }}">
+                                    {{ child.details[0].name }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-2 col-lg-2">
+                <p class="footer-title">Social Media</p>
+                <div class="footer-content footer-social">
+                    <div>
+                        <a href="https://www.facebook.com/mydruckstore/" title="Besuchen Sie und auf Facebook" target="_blank">
+                            <i class="fa fa-facebook" aria-hidden="true"></i>
+                            <span>Facebook</span>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="https://twitter.com/mydruckstore" title="Besuchen Sie und auf Twitter" target="_blank">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                            <span>Twitter</span>
+                        </a>
+                    </div>    
+                    <div>
+                        <a href="https://www.youtube.com/channel/UC1MVmdiR6iW-g_2rp9eHT5A" title="Besuchen Sie und auf YouTube" target="_blank">
+                            <i class="fa fa-youtube-play" aria-hidden="true"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>    
+                    <div>
+                        <a href="https://www.instagram.com/mydruckstore/" title="Besuchen Sie und auf Instagram" target="_blank">
+                            <i class="fa fa-instagram" aria-hidden="true"></i>
+                            <span>Instagram</span>
+                        </a>
+                    </div>    
+                    {#<div>
+                        <a href="#" title="Besuchen Sie und auf Pinterest" target="_blank">
+                            <i class="fa fa-pinterest-p" aria-hidden="true"></i>
+                            <span>Pinterest</span>
+                        </a>
+                    </div>   #} 
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4 paymentimg">
+                <p class="footer-title">Zahlungsmethoden</p>
+                <div>
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/paypal.png" alt="PayPal" />                   
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/ueberweisun.png" alt="Überweisung" />
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/amazonpay.png" alt="Amazon Payments" />                   
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/paydirekt.png" alt="Paydirekt" />                  
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/dhl.png" alt="DHL Nachnahme" />
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/ec.png" alt="EC" />           
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/sofort.png" alt="Sofort" />
+                    <img src="{{ plugin_path('MyDruckStore') }}/images/kreditkarte.png" alt="Kreditkarte" />
+                </div>
+            </div>
+      
+            {{ LayoutContainer.show("Ceres::Footer.RowOne") }}    
+        </div>
+        <div class="row">
+            <div class="offset-md-2 col-md-10">
+                <div class="rowline">
+                    <div class="row">
+                        <div class="offset-md-2 col-md-3 offset-lg-5 col-lg-2 collborder">
+                            <p class="footer-title m-t-0">Versand durch</p>
+                            <img src="{{ plugin_path('MyDruckStore') }}/images/dhl_ship.png" alt="DHL" />
+                        </div>
+                        <div class="col-md-7 col-lg-5 collborder">
+                            <p class="footer-title m-t-0">Leistungen und Sicherheit</p>
+                            <div class="con-leistungen clearfix">
+                                <div class="con-l-seals">
+                                    <a href="#">
+                                        <img src="{{ plugin_path('MyDruckStore') }}/images/ts_seals.png" alt="Trusted Shops" />
+                                    </a>
+                                    <img src="{{ plugin_path('MyDruckStore') }}/images/seal.png" alt="DHL" />
+                                </div>
+                                <div class="con-l-vorteile item-usp">
+                                    <ul>
+                                        <li>Hohe Qualität mit schnellen Lieferzeiten</li>
+                                        <li>Datenschutz</li>
+                                        <li>Sichere Zahlung mit SSL-Verschlüsselung </li>
+                                        <li>Käuferschutz</li>
+                                        <li>Rückgaberecht</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-claim">
+        Copyright© 2012-{{ "now" | date("Y") }} MyDruckStore-Store
+    </div>
+</footer>
